@@ -5,7 +5,6 @@ export interface PortfolioData {
   about?: AboutData | null;
   seo?: SEOData | null;
   projects?: ProjectsData;
-  linkedin?: LinkedInData;
 }
 
 export type Project = FeaturedProject

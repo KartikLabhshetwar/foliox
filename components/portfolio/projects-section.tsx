@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Star, GitFork, ExternalLink } from "lucide-react"
+import { Star, GitFork, ExternalLink, Github } from "lucide-react"
 import type { ProjectsData } from "@/types/github"
 
 interface ProjectsSectionProps {
@@ -25,15 +25,7 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
             <CardHeader>
               <div className="flex justify-between items-start gap-2">
                 <CardTitle className="text-lg">
-                  <a
-                    href={project.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-primary transition-colors flex items-center gap-2"
-                  >
-                    {project.name}
-                    <ExternalLink className="h-4 w-4" />
-                  </a>
+                  {project.name}
                 </CardTitle>
               </div>
               {project.description && (
@@ -69,6 +61,29 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
                   ))}
                 </div>
               )}
+
+              <div className="flex gap-2 pt-2">
+                <a
+                  href={project.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-3 py-1.5 text-sm bg-primary/10 hover:bg-primary/20 rounded-md transition-colors"
+                >
+                  <Github className="h-4 w-4" />
+                  <span>GitHub</span>
+                </a>
+                {project.homepage && (
+                  <a
+                    href={project.homepage}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-3 py-1.5 text-sm bg-primary/10 hover:bg-primary/20 rounded-md transition-colors"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    <span>Live Site</span>
+                  </a>
+                )}
+              </div>
             </CardContent>
           </Card>
         ))}
@@ -84,7 +99,7 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
               {Object.entries(projects.languages)
                 .sort(([, a], [, b]) => b - a)
                 .slice(0, 10)
-                .map(([lang, bytes]) => (
+                .map(([lang]) => (
                   <Badge key={lang} variant="secondary">
                     {lang}
                   </Badge>

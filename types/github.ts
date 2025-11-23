@@ -121,6 +121,42 @@ export interface GitHubGraphQLUser {
       name: string;
       description: string | null;
       url: string;
+      homepageUrl: string | null;
+      stargazerCount: number;
+      forkCount: number;
+      isPinned: boolean;
+      primaryLanguage: {
+        name: string;
+        color: string;
+      } | null;
+      languages: {
+        edges: Array<{
+          size: number;
+          node: {
+            name: string;
+            color: string;
+          };
+        }>;
+      };
+      repositoryTopics: {
+        nodes: Array<{
+          topic: {
+            name: string;
+          };
+        }>;
+      };
+      isPrivate: boolean;
+      isFork: boolean;
+      updatedAt: string;
+      createdAt: string;
+    }>;
+  };
+  pinnedItems: {
+    nodes: Array<{
+      name: string;
+      description: string | null;
+      url: string;
+      homepageUrl: string | null;
       stargazerCount: number;
       forkCount: number;
       primaryLanguage: {
@@ -162,6 +198,7 @@ export interface NormalizedProfile {
   email: string | null;
   website: string | null;
   twitter_username: string | null;
+  linkedin_url?: string | null;
   company: string | null;
   followers: number;
   following: number;
@@ -189,6 +226,7 @@ export interface FeaturedProject {
   name: string;
   description: string | null;
   url: string;
+  homepage?: string | null;
   stars: number;
   forks: number;
   language: string | null;

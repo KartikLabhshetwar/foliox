@@ -1,5 +1,5 @@
 import type { NormalizedProfile, ProjectsData, AboutData } from "@/types/github"
-import type { PortfolioData, LinkedInData } from "@/types/portfolio"
+import type { PortfolioData } from "@/types/portfolio"
 
 interface FetchOptions {
   cache?: RequestCache
@@ -85,22 +85,14 @@ export class APIClient {
     )
   }
 
-  async getLinkedIn(username: string, options?: FetchOptions) {
-    return this.fetch<LinkedInData>(
-      `/api/linkedin/${username}`,
-      options
-    )
-  }
-
   async getFullPortfolio(
     username: string,
     options?: FetchOptions
   ): Promise<PortfolioData | null> {
-    const [profile, projects, aboutData, linkedin] = await Promise.allSettled([
+    const [profile, projects, aboutData] = await Promise.allSettled([
       this.getProfile(username, options),
       this.getProjects(username, options),
       this.getAbout(username, options),
-      this.getLinkedIn(username, options),
     ])
 
     const profileData =
@@ -111,8 +103,6 @@ export class APIClient {
       aboutData.status === "fulfilled" && aboutData.value
         ? aboutData.value.about
         : null
-    const linkedinData =
-      linkedin.status === "fulfilled" ? linkedin.value : null
 
     if (!profileData) {
       return null
@@ -123,7 +113,6 @@ export class APIClient {
       about: about || profileData.about,
       seo: profileData.seo,
       projects: projectsData || undefined,
-      linkedin: linkedinData || undefined,
     }
   }
 }

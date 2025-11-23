@@ -69,6 +69,17 @@ export function HeroSection({ profile, about }: HeroSectionProps) {
               <Github className="h-4 w-4" />
               <span>GitHub</span>
             </a>
+            {profile.linkedin_url && (
+              <a
+                href={profile.linkedin_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-sm hover:text-primary transition-colors"
+              >
+                <Linkedin className="h-4 w-4" />
+                <span>LinkedIn</span>
+              </a>
+            )}
             {profile.twitter_username && (
               <a
                 href={`https://twitter.com/${profile.twitter_username}`}

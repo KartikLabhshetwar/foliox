@@ -3,7 +3,6 @@ import { notFound } from "next/navigation"
 import { HeroSection } from "@/components/portfolio/hero-section"
 import { AboutSection } from "@/components/portfolio/about-section"
 import { ProjectsSection } from "@/components/portfolio/projects-section"
-import { ExperienceSection } from "@/components/portfolio/experience-section"
 import { ContributionGraph } from "@/components/portfolio/contribution-graph"
 import { PortfolioNavbar } from "@/components/portfolio/navbar"
 import { PortfolioFooter } from "@/components/portfolio/footer"
@@ -69,7 +68,6 @@ export default async function PortfolioPage({ params }: PageProps) {
           <AboutSection about={data.about} />
           <ProjectsSection projects={data.projects} />
           <ContributionGraph username={username} />
-          <ExperienceSection linkedin={data.linkedin} />
         </div>
       </main>
 
