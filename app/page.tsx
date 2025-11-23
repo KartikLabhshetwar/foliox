@@ -1,18 +1,34 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Github, Wand2, Rocket, GitBranch, Sparkles, Zap, Globe } from "lucide-react"
+import { Github, Wand2, Rocket, GitBranch, Sparkles, Zap, Globe, Star } from "lucide-react"
 import Link from "next/link"
 
 export default function LandingPage() {
   const [username, setUsername] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [starCount, setStarCount] = useState<number | null>(null)
+  const [isStarAnimating, setIsStarAnimating] = useState(false)
   const router = useRouter()
+
+  useEffect(() => {
+    const fetchStars = async () => {
+      try {
+        const response = await fetch("/api/github/stars")
+        const data = await response.json()
+        const stars = typeof data.stars === "number" ? data.stars : 0
+        setStarCount(stars)
+      } catch {
+        setStarCount(null)
+      }
+    }
+    fetchStars()
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -38,10 +54,29 @@ export default function LandingPage() {
             />
             <span className="font-bold text-xl text-foreground">Foliox</span>
           </Link>
-          <Link href="https://github.com/kartiklabhshetwar/foliox" target="_blank" rel="noreferrer">
-            <Button variant="ghost" size="sm" className="gap-2">
-              <Github className="h-4 w-4" />
-              <span className="hidden sm:inline">Star on GitHub</span>
+          <Link 
+            href="https://github.com/kartiklabhshetwar/foliox" 
+            target="_blank" 
+            rel="noreferrer"
+            onMouseEnter={() => setIsStarAnimating(true)}
+            onMouseLeave={() => setIsStarAnimating(false)}
+          >
+            <Button variant="ghost" size="sm" className="gap-2 group">
+              <div className="flex items-center gap-1.5">
+                <Star 
+                  className={`h-4 w-4 transition-all duration-300 ${
+                    isStarAnimating 
+                      ? "fill-primary text-primary scale-110 rotate-12" 
+                      : "fill-none"
+                  }`}
+                />
+                {typeof starCount === "number" && starCount >= 0 && (
+                  <span className="text-sm font-medium tabular-nums">
+                    {starCount.toLocaleString()}
+                  </span>
+                )}
+                <span className="hidden sm:inline">Star on GitHub</span>
+              </div>
             </Button>
           </Link>
         </div>
@@ -58,8 +93,7 @@ export default function LandingPage() {
 
           <div className="container mx-auto max-w-4xl space-y-8">
             <div className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/50 px-3 py-1 text-sm text-muted-foreground">
-              <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse"></span>
-              v1.0 Public Beta
+              <span> AI-Powered • Free Forever</span>
             </div>
 
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tighter">
