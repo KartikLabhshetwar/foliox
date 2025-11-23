@@ -2,10 +2,12 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { FaGithub } from "react-icons/fa"
-import { BsStars, BsCodeSlash, BsLightningCharge } from "react-icons/bs"
+import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Github, Wand2, Rocket, GitBranch, Sparkles, Zap, Globe } from "lucide-react"
+import Link from "next/link"
 
 export default function LandingPage() {
   const [username, setUsername] = useState("")
@@ -21,125 +23,209 @@ export default function LandingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted">
-      <div className="container mx-auto px-4 py-16 md:py-24">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center space-y-6 mb-12">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
-              <BsStars className="h-4 w-4" />
-              <span>AI-Powered Portfolio Generator</span>
+    <div className="min-h-screen bg-background text-foreground flex flex-col">
+      {/* Header */}
+      <header className="border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <Image
+              src="/logo.png"
+              alt="Foliox"
+              width={40}
+              height={40}
+              className="h-10 w-10 object-contain"
+              priority
+            />
+            <span className="font-bold text-xl text-foreground">Foliox</span>
+          </Link>
+          <Link href="https://github.com/kartiklabhshetwar/foliox" target="_blank" rel="noreferrer">
+            <Button variant="ghost" size="sm" className="gap-2">
+              <Github className="h-4 w-4" />
+              <span className="hidden sm:inline">Star on GitHub</span>
+            </Button>
+          </Link>
+        </div>
+      </header>
+
+      <main className="flex-1">
+        {/* Hero */}
+        <section className="py-20 md:py-32 px-4 text-center relative overflow-hidden">
+          {/* Background effects */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-6xl -z-10 opacity-50 pointer-events-none">
+            <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute top-1/3 right-1/4 w-72 h-72 bg-secondary/20 rounded-full blur-3xl animate-pulse delay-1000" />
+          </div>
+
+          <div className="container mx-auto max-w-4xl space-y-8">
+            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/50 px-3 py-1 text-sm text-muted-foreground">
+              <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse"></span>
+              v1.0 Public Beta
             </div>
 
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
-              Turn Your GitHub Into a
-              <span className="block text-primary mt-2">Beautiful Portfolio</span>
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tighter">
+              From GitHub to Portfolio
+              <br className="hidden md:block" />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/60">
+                in Seconds
+              </span>
             </h1>
 
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-              Auto-generate a stunning developer portfolio from your GitHub profile with AI-powered summaries, 
-              featured projects, and professional insights.
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Transform your GitHub profile into a stunning portfolio with AI-powered insights. 
+              No coding required—just enter your username and watch the magic happen.
             </p>
-          </div>
 
-          <div className="max-w-md mx-auto mb-16">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="relative">
-                <FaGithub className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <Input
-                  type="text"
-                  placeholder="Enter GitHub username..."
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="pl-10 h-12 text-base"
-                  disabled={isLoading}
-                />
-              </div>
-              <Button 
-                type="submit" 
-                className="w-full h-12 text-base"
-                disabled={!username.trim() || isLoading}
-              >
-                {isLoading ? (
-                  <span className="flex items-center gap-2">
-                    <span className="animate-spin">⚡</span>
-                    Generating Portfolio...
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-2">
-                    Generate Portfolio
-                    <BsStars className="h-4 w-4" />
-                  </span>
-                )}
-              </Button>
-            </form>
+            {/* Form */}
+            <div className="max-w-md mx-auto relative group">
+              <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-lg blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200" />
+              <form onSubmit={handleSubmit} className="relative flex gap-2 p-2 bg-card border border-border rounded-lg shadow-lg">
+                <div className="relative flex-1">
+                  <Github className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="github-username"
+                    className="pl-9 border-0 shadow-none focus-visible:ring-0 bg-transparent h-10"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    disabled={isLoading}
+                  />
+                </div>
+                <Button type="submit" disabled={!username || isLoading}>
+                  {isLoading ? "Generating..." : "Generate"}
+                  {!isLoading && <Wand2 className="ml-2 h-4 w-4" />}
+                </Button>
+              </form>
+            </div>
 
-            <p className="text-center text-sm text-muted-foreground mt-4">
-              Try: <button 
-                onClick={() => setUsername("KartikLabhshetwar")}
-                className="text-primary hover:underline font-medium"
-              >
+            <div className="pt-4 text-sm text-muted-foreground">
+              <span className="mr-2">Try example:</span>
+              <button onClick={() => setUsername("KartikLabhshetwar")} className="underline hover:text-primary transition-colors">
                 KartikLabhshetwar
               </button>
+            </div>
+          </div>
+        </section>
+
+        {/* Features */}
+        <section className="py-20 bg-muted/30 border-y border-border/50">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">Why Choose Foliox?</h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Everything you need to showcase your developer journey in one beautiful portfolio
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <Card className="bg-card border-border/50 transition-all hover:border-primary/50 hover:shadow-lg hover:-translate-y-1">
+                <CardHeader>
+                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 text-primary">
+                    <Sparkles className="h-6 w-6" />
+                  </div>
+                  <CardTitle>AI-Powered Summaries</CardTitle>
+                  <CardDescription>
+                    Groq AI analyzes your repositories and contributions to generate professional project descriptions, 
+                    technical highlights, and compelling case studies automatically.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+              <Card className="bg-card border-border/50 transition-all hover:border-primary/50 hover:shadow-lg hover:-translate-y-1">
+                <CardHeader>
+                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 text-primary">
+                    <Zap className="h-6 w-6" />
+                  </div>
+                  <CardTitle>Zero Setup Required</CardTitle>
+                  <CardDescription>
+                    No sign-ups, no configurations. Enter your GitHub username and get an instant, 
+                    shareable portfolio URL. Your portfolio is live in seconds.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+              <Card className="bg-card border-border/50 transition-all hover:border-primary/50 hover:shadow-lg hover:-translate-y-1">
+                <CardHeader>
+                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 text-primary">
+                    <GitBranch className="h-6 w-6" />
+                  </div>
+                  <CardTitle>Live GitHub Sync</CardTitle>
+                  <CardDescription>
+                    Your portfolio automatically updates as you push new code, create repositories, 
+                    and contribute to open source. Always reflects your latest work.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+              <Card className="bg-card border-border/50 transition-all hover:border-primary/50 hover:shadow-lg hover:-translate-y-1">
+                <CardHeader>
+                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 text-primary">
+                    <Globe className="h-6 w-6" />
+                  </div>
+                  <CardTitle>Custom Share URLs</CardTitle>
+                  <CardDescription>
+                    Create memorable custom URLs for your portfolio instead of using your GitHub username. 
+                    Perfect for sharing on resumes, LinkedIn, or business cards.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+              <Card className="bg-card border-border/50 transition-all hover:border-primary/50 hover:shadow-lg hover:-translate-y-1">
+                <CardHeader>
+                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 text-primary">
+                    <Rocket className="h-6 w-6" />
+                  </div>
+                  <CardTitle>SEO Optimized</CardTitle>
+                  <CardDescription>
+                    Every portfolio is built with SEO best practices. Dynamic metadata, semantic HTML, 
+                    and optimized content help you rank better in search results.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+              <Card className="bg-card border-border/50 transition-all hover:border-primary/50 hover:shadow-lg hover:-translate-y-1">
+                <CardHeader>
+                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 text-primary">
+                    <Wand2 className="h-6 w-6" />
+                  </div>
+                  <CardTitle>Smart Caching</CardTitle>
+                  <CardDescription>
+                    Intelligent database caching ensures lightning-fast portfolio generation while minimizing 
+                    API calls. Your portfolio loads instantly, every time.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer className="border-t border-border bg-muted/30">
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-3">
+              <Image
+                src="/logo.png"
+                alt="Foliox"
+                width={28}
+                height={28}
+                className="h-7 w-7 object-contain"
+              />
+              <span className="text-sm font-medium text-foreground">Foliox</span>
+            </div>
+            <p className="text-center text-sm text-muted-foreground md:text-left">
+              Built by{" "}
+              <a 
+                href="https://github.com/kartiklabhshetwar" 
+                target="_blank" 
+                rel="noreferrer" 
+                className="font-medium text-foreground hover:text-primary transition-colors underline underline-offset-4"
+              >
+                Kartik
+              </a>
+              {" "}• Open source on{" "}
+              <a 
+                href="https://github.com/kartiklabhshetwar/foliox" 
+                target="_blank" 
+                rel="noreferrer" 
+                className="font-medium text-foreground hover:text-primary transition-colors underline underline-offset-4"
+              >
+                GitHub
+              </a>
             </p>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-6 rounded-lg border bg-card hover:shadow-lg transition-shadow">
-              <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                <FaGithub className="h-6 w-6 text-primary" />
-              </div>
-              <h3 className="font-semibold text-lg mb-2">GitHub Integration</h3>
-              <p className="text-sm text-muted-foreground">
-                Automatically fetch your profile, repositories, and contribution history from GitHub.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-lg border bg-card hover:shadow-lg transition-shadow">
-              <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                <BsStars className="h-6 w-6 text-primary" />
-              </div>
-              <h3 className="font-semibold text-lg mb-2">AI-Powered Insights</h3>
-              <p className="text-sm text-muted-foreground">
-                Generate professional summaries, highlights, and SEO-optimized descriptions with AI.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-lg border bg-card hover:shadow-lg transition-shadow">
-              <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                <BsLightningCharge className="h-6 w-6 text-primary" />
-              </div>
-              <h3 className="font-semibold text-lg mb-2">Instant Generation</h3>
-              <p className="text-sm text-muted-foreground">
-                Get a fully-featured portfolio in seconds with smart caching and optimization.
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-16 text-center">
-            <p className="text-sm text-muted-foreground mb-4">Powered by</p>
-            <div className="flex items-center justify-center gap-6 text-sm font-medium">
-              <span className="flex items-center gap-2">
-                <BsCodeSlash className="h-4 w-4" />
-                Next.js
-              </span>
-              <span>•</span>
-              <span className="flex items-center gap-2">
-                <FaGithub className="h-4 w-4" />
-                GitHub API
-              </span>
-              <span>•</span>
-              <span className="flex items-center gap-2">
-                <BsStars className="h-4 w-4" />
-                Groq AI
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <footer className="border-t py-8">
-        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} Foliox. Built with ❤️ for developers.</p>
         </div>
       </footer>
     </div>
