@@ -72,7 +72,7 @@ export function ShareButton({ username }: ShareButtonProps) {
         setAvailabilityStatus("taken")
         setValidationError(data.error || "Invalid custom URL format")
       }
-    } catch (error) {
+    } catch {
       setAvailabilityStatus("idle")
       setValidationError("Failed to check availability. Please try again.")
     } finally {
@@ -123,7 +123,7 @@ export function ShareButton({ username }: ShareButtonProps) {
           setAvailabilityStatus("taken")
         }
       }
-    } catch (error) {
+    } catch {
       setValidationError("Failed to register custom URL. Please try again.")
     } finally {
       setIsRegistering(false)
@@ -166,82 +166,95 @@ export function ShareButton({ username }: ShareButtonProps) {
           <span className="hidden sm:inline">Share</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Share Portfolio</DialogTitle>
           <DialogDescription>
             Create a custom URL or share your portfolio using the link below.
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4">
+        <div className="space-y-6">
           {!registeredSlug && (
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Create Custom URL (Optional)</label>
-              <div className="flex gap-2">
-                <div className="flex-1 relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
-                    {typeof window !== 'undefined' ? new URL(window.location.href).origin : ''}/
-                  </span>
-                  <Input
-                    value={customSlug}
-                    onChange={(e) => {
-                      const value = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '')
-                      setCustomSlug(value)
-                    }}
-                    placeholder="your-custom-url"
-                    className="font-mono text-sm pl-[140px]"
-                    disabled={isRegistering}
-                  />
+            <div className="space-y-3">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">Create Custom URL (Optional)</label>
+                <div className="flex gap-2">
+                  <div className="flex-1 flex items-center border border-input rounded-md bg-background overflow-hidden focus-within:ring-1 focus-within:ring-ring">
+                    <span className="px-3 text-sm text-muted-foreground whitespace-nowrap border-r border-input bg-muted/50 py-2">
+                      {typeof window !== 'undefined' ? new URL(window.location.href).origin : ''}/
+                    </span>
+                    <Input
+                      value={customSlug}
+                      onChange={(e) => {
+                        const value = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '')
+                        setCustomSlug(value)
+                      }}
+                      placeholder="your-custom-url"
+                      className="border-0 rounded-none focus-visible:ring-0 font-mono text-sm flex-1"
+                      disabled={isRegistering}
+                    />
+                  </div>
+                  <Button
+                    onClick={handleRegister}
+                    disabled={availabilityStatus !== "available" || isRegistering || !customSlug.trim()}
+                    className="shrink-0"
+                  >
+                    {isRegistering ? (
+                      <FaSpinner className="h-4 w-4 animate-spin" />
+                    ) : (
+                      "Create"
+                    )}
+                  </Button>
                 </div>
-                <Button
-                  onClick={handleRegister}
-                  disabled={availabilityStatus !== "available" || isRegistering || !customSlug.trim()}
-                  className="shrink-0"
-                >
-                  {isRegistering ? (
-                    <FaSpinner className="h-4 w-4 animate-spin" />
-                  ) : (
-                    "Create"
-                  )}
-                </Button>
               </div>
               {isChecking && (
-                <p className="text-xs text-muted-foreground flex items-center gap-1">
+                <p className="text-xs text-muted-foreground flex items-center gap-2">
                   <FaSpinner className="h-3 w-3 animate-spin" />
                   Checking availability...
                 </p>
               )}
               {!isChecking && availabilityStatus === "available" && (
-                <p className="text-xs text-green-600">✓ This URL is available!</p>
+                <p className="text-xs text-green-600 dark:text-green-400 flex items-center gap-1.5">
+                  <FaCheck className="h-3 w-3" />
+                  This URL is available!
+                </p>
               )}
               {!isChecking && availabilityStatus === "taken" && (
-                <p className="text-xs text-red-600">✗ {validationError || "This URL is already taken"}</p>
+                <p className="text-xs text-destructive flex items-center gap-1.5">
+                  <span>✗</span>
+                  {validationError || "This URL is already taken"}
+                </p>
               )}
-              {validationError && availabilityStatus !== "taken" && (
-                <p className="text-xs text-red-600">{validationError}</p>
+              {validationError && availabilityStatus !== "taken" && availabilityStatus !== "available" && (
+                <p className="text-xs text-destructive">{validationError}</p>
               )}
             </div>
           )}
           {registeredSlug && (
-            <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-md border border-green-200 dark:border-green-800">
-              <p className="text-sm text-green-700 dark:text-green-300">
-                ✓ Custom URL created successfully! Your portfolio is now available at <span className="font-mono font-semibold">/{registeredSlug}</span>
+            <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+              <p className="text-sm text-green-700 dark:text-green-300 flex items-start gap-2">
+                <FaCheck className="h-4 w-4 mt-0.5 shrink-0" />
+                <span>
+                  Custom URL created successfully! Your portfolio is now available at{" "}
+                  <span className="font-mono font-semibold">/{registeredSlug}</span>
+                </span>
               </p>
             </div>
           )}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Your Portfolio URL</label>
+          <div className="space-y-3">
+            <label className="text-sm font-medium text-foreground">Your Portfolio URL</label>
             <div className="flex gap-2">
               <Input
                 value={portfolioUrl}
                 readOnly
-                className="font-mono text-sm"
+                className="font-mono text-sm bg-muted/50"
               />
               <Button
                 variant="outline"
                 size="icon"
                 onClick={handleCopy}
                 className="shrink-0"
+                title="Copy URL"
               >
                 {copied ? (
                   <FaCheck className="h-4 w-4 text-green-600" />
@@ -251,7 +264,7 @@ export function ShareButton({ username }: ShareButtonProps) {
               </Button>
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-3 pt-2">
             {canShare && (
               <Button onClick={handleShare} className="flex-1 gap-2">
                 <FaShare className="h-4 w-4" />
@@ -276,7 +289,7 @@ export function ShareButton({ username }: ShareButtonProps) {
               )}
             </Button>
           </div>
-          <p className="text-xs text-muted-foreground text-center">
+          <p className="text-xs text-muted-foreground text-center pt-2">
             Anyone with this link can view your portfolio
           </p>
         </div>
