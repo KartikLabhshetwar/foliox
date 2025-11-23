@@ -5,9 +5,10 @@ import { Settings } from '@/lib/config/settings';
 const ALLOWED_ORIGINS = [
   'http://localhost:3000',
   'http://localhost:8080',
+  process.env.NEXT_PUBLIC_SITE_URL,
 ];
 
-const EXCLUDED_PATHS = ['/api/docs', '/api/openapi.json', '/_next', '/favicon.ico'];
+const EXCLUDED_PATHS = ['/api/docs', '/api/openapi.json', '/api/screenshot', '/api/github/stars', '/_next', '/favicon.ico'];
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { FaGithub } from "react-icons/fa"
 import { FaMapMarkerAlt, FaBuilding, FaUsers } from "react-icons/fa"
+import { FaStar } from "react-icons/fa"
 import Link from "next/link"
 import { trackEvent } from "@/lib/utils/analytics"
 import type { NormalizedProfile } from "@/types/github"
@@ -17,7 +18,48 @@ export default function LandingPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [previewUser, setPreviewUser] = useState<NormalizedProfile | null>(null)
   const [isFetchingPreview, setIsFetchingPreview] = useState(false)
+  const [starCount, setStarCount] = useState(0)
+  const [displayedStars, setDisplayedStars] = useState(0)
   const router = useRouter()
+
+  useEffect(() => {
+    const fetchStarCount = async () => {
+      try {
+        const response = await fetch('/api/github/stars')
+        if (response.ok) {
+          const data = await response.json()
+          setStarCount(data.stars || 0)
+        }
+      } catch {
+        setStarCount(0)
+      }
+    }
+
+    fetchStarCount()
+  }, [])
+
+  useEffect(() => {
+    if (starCount === 0) return
+
+    const duration = 500
+    const steps = 40
+    const increment = starCount / steps
+    const stepDuration = duration / steps
+    let currentStep = 0
+
+    const timer = setInterval(() => {
+      currentStep++
+      const nextValue = Math.min(Math.floor(increment * currentStep), starCount)
+      setDisplayedStars(nextValue)
+
+      if (currentStep >= steps) {
+        setDisplayedStars(starCount)
+        clearInterval(timer)
+      }
+    }, stepDuration)
+
+    return () => clearInterval(timer)
+  }, [starCount])
 
   useEffect(() => {
     const trimmedUsername = username.trim()
@@ -94,19 +136,39 @@ export default function LandingPage() {
             href="https://github.com/kartiklabhshetwar/foliox"
             target="_blank"
             rel="noreferrer"
-            className="hidden md:flex items-center justify-center gap-1 outline-none transition-colors border border-transparent text-white px-2.5 py-1.5 rounded-full bg-gray-900 hover:bg-gray-700 active:bg-gray-600 text-xs md:text-sm lg:px-4 lg:py-2.5 lg:text-base tracking-normal whitespace-nowrap cursor-pointer"
+            className="hidden md:flex items-center justify-center gap-1.5 outline-none transition-colors border border-transparent text-white px-2.5 py-1.5 rounded-full bg-gray-900 hover:bg-gray-700 active:bg-gray-600 text-xs md:text-sm lg:px-4 lg:py-2.5 lg:text-base tracking-normal whitespace-nowrap cursor-pointer relative group overflow-visible"
           >
-            <FaGithub className="h-4 w-4" />
-            GitHub
+            <FaGithub className="h-4 w-4 relative z-10 transition-transform group-hover:scale-110" />
+            <span className="relative z-10">GitHub</span>
+            {displayedStars > 0 && (
+              <span className="relative z-10 flex items-center gap-1 text-yellow-400 font-medium">
+                <FaStar className="h-3 w-3" />
+                <span className="tabular-nums">{displayedStars.toLocaleString()}</span>
+              </span>
+            )}
+            <FaStar className="absolute h-3 w-3 text-yellow-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -top-1 -right-1 animate-sparkle" />
+            <FaStar className="absolute h-2 w-2 text-yellow-300 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -bottom-0.5 -left-0.5 animate-sparkle-float" style={{ animationDelay: '0.2s' }} />
+            <FaStar className="absolute h-2.5 w-2.5 text-yellow-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500 top-1/2 -left-2 animate-sparkle" style={{ animationDelay: '0.4s' }} />
+            <FaStar className="absolute h-2 w-2 text-yellow-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500 top-1/2 -right-2 animate-sparkle-float" style={{ animationDelay: '0.6s' }} />
           </Link>
 
           <Link
             href="https://github.com/kartiklabhshetwar/foliox"
             target="_blank"
             rel="noreferrer"
-            className="md:hidden flex items-center justify-center gap-1 outline-none transition-colors border border-transparent text-white px-2.5 py-1.5 rounded-full bg-gray-900 hover:bg-gray-700 active:bg-gray-600 text-xs tracking-normal whitespace-nowrap cursor-pointer mr-2.5"
+            className="md:hidden flex items-center justify-center gap-1 outline-none transition-colors border border-transparent text-white px-2.5 py-1.5 rounded-full bg-gray-900 hover:bg-gray-700 active:bg-gray-600 text-xs tracking-normal whitespace-nowrap cursor-pointer mr-2.5 relative group overflow-visible"
           >
-            <FaGithub className="h-4 w-4" />
+            <FaGithub className="h-4 w-4 relative z-10 transition-transform group-hover:scale-110" />
+            {displayedStars > 0 && (
+              <span className="relative z-10 flex items-center gap-0.5 text-yellow-400 text-[10px] font-medium">
+                <FaStar className="h-2.5 w-2.5" />
+                <span className="tabular-nums">{displayedStars > 999 ? `${(displayedStars / 1000).toFixed(1)}k` : displayedStars}</span>
+              </span>
+            )}
+            <FaStar className="absolute h-2.5 w-2.5 text-yellow-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -top-1 -right-1 animate-sparkle" />
+            <FaStar className="absolute h-2 w-2 text-yellow-300 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -bottom-0.5 -left-0.5 animate-sparkle-float" style={{ animationDelay: '0.2s' }} />
+            <FaStar className="absolute h-2 w-2 text-yellow-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500 top-1/2 -left-2 animate-sparkle" style={{ animationDelay: '0.4s' }} />
+            <FaStar className="absolute h-2 w-2 text-yellow-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500 top-1/2 -right-2 animate-sparkle-float" style={{ animationDelay: '0.6s' }} />
           </Link>
         </div>
       </header>
