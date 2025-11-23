@@ -17,7 +17,7 @@ export function ContributionGraph({ username }: ContributionGraphProps) {
   }, [])
 
   const theme = {
-    light: ["#ebedf0", "#c6e48b", "#7bc96f", "#239a3b", "#196127"],
+    light: ["#ebedf0", "#9be9a8", "#40c463", "#30a14e", "#216e39"],
     dark: ["#161b22", "#0e4429", "#006d32", "#26a641", "#39d353"],
   }
 
@@ -54,7 +54,11 @@ export function ContributionGraph({ username }: ContributionGraphProps) {
                 blockSize={12}
                 blockMargin={4}
                 showWeekdayLabels={true}
-                theme={theme}
+                colorScheme="light"
+                theme={{
+                  light: theme.light,
+                  dark: theme.dark,
+                }}
               />
             </div>
           </div>
@@ -62,10 +66,10 @@ export function ContributionGraph({ username }: ContributionGraphProps) {
             <span>Less</span>
             <div className="flex gap-1">
               <div className="w-3 h-3 rounded-sm bg-[#ebedf0] dark:bg-[#161b22]" />
-              <div className="w-3 h-3 rounded-sm bg-[#c6e48b] dark:bg-[#0e4429]" />
-              <div className="w-3 h-3 rounded-sm bg-[#7bc96f] dark:bg-[#006d32]" />
-              <div className="w-3 h-3 rounded-sm bg-[#239a3b] dark:bg-[#26a641]" />
-              <div className="w-3 h-3 rounded-sm bg-[#196127] dark:bg-[#39d353]" />
+              <div className="w-3 h-3 rounded-sm bg-[#9be9a8] dark:bg-[#0e4429]" />
+              <div className="w-3 h-3 rounded-sm bg-[#40c463] dark:bg-[#006d32]" />
+              <div className="w-3 h-3 rounded-sm bg-[#30a14e] dark:bg-[#26a641]" />
+              <div className="w-3 h-3 rounded-sm bg-[#216e39] dark:bg-[#39d353]" />
             </div>
             <span>More</span>
           </div>

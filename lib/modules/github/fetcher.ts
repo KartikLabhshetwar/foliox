@@ -1,6 +1,6 @@
 import { graphql } from '@octokit/graphql';
 import { Settings } from '@/lib/config/settings';
-import { NormalizedProfile, GitHubGraphQLUser } from '@/types/github';
+import { NormalizedProfile, GitHubGraphQLUser, GitHubMetrics } from '@/types/github';
 import { parseSocialLinksFromReadme } from '@/lib/utils/readme-parser';
 
 const graphqlWithAuth = Settings.GITHUB_TOKEN
@@ -38,7 +38,6 @@ const USER_QUERY = `
           homepageUrl
           stargazerCount
           forkCount
-          isPinned
           primaryLanguage {
             name
             color
@@ -107,7 +106,92 @@ const USER_QUERY = `
   }
 `;
 
+const PR_STATS_QUERY = `
+  query($username: String!) {
+    user(login: $username) {
+      mergedPRs: pullRequests(states: MERGED) {
+        totalCount
+      }
+      openPRs: pullRequests(states: OPEN) {
+        totalCount
+      }
+      contributionsCollection {
+        totalCommitContributions
+        totalIssueContributions
+        totalPullRequestContributions
+        totalPullRequestReviewContributions
+      }
+    }
+  }
+`;
+
 export class GitHubProfileFetcher {
+  static async fetchPRStatistics(username: string): Promise<GitHubMetrics> {
+    if (!Settings.GITHUB_TOKEN) {
+      return {
+        prs_merged: 0,
+        prs_open: 0,
+        total_contributions: 0,
+        issues_opened: 0,
+        issues_closed: 0,
+      };
+    }
+
+    try {
+      const result = await graphqlWithAuth<{
+        user: {
+          mergedPRs: {
+            totalCount: number;
+          };
+          openPRs: {
+            totalCount: number;
+          };
+          contributionsCollection: {
+            totalCommitContributions: number;
+            totalIssueContributions: number;
+            totalPullRequestContributions: number;
+            totalPullRequestReviewContributions: number;
+          };
+        } | null;
+      }>(PR_STATS_QUERY, { username });
+
+      if (!result.user) {
+        return {
+          prs_merged: 0,
+          prs_open: 0,
+          total_contributions: 0,
+          issues_opened: 0,
+          issues_closed: 0,
+        };
+      }
+
+      const merged = result.user.mergedPRs.totalCount;
+      const open = result.user.openPRs.totalCount;
+      const contributions = result.user.contributionsCollection;
+
+      return {
+        prs_merged: merged,
+        prs_open: open,
+        total_contributions:
+          contributions.totalCommitContributions +
+          contributions.totalIssueContributions +
+          contributions.totalPullRequestContributions +
+          contributions.totalPullRequestReviewContributions,
+        issues_opened: contributions.totalIssueContributions,
+        issues_closed: 0,
+      };
+    } catch (error) {
+      console.error('Failed to fetch PR statistics:', error);
+      return {
+        prs_merged: 0,
+        prs_open: 0,
+        total_contributions: 0,
+        issues_opened: 0,
+        issues_closed: 0,
+      };
+    }
+  }
+
   static async fetchReadmeContent(username: string): Promise<string | null> {
     if (!Settings.GITHUB_TOKEN) {
       return null;
@@ -204,6 +288,8 @@ export class GitHubProfileFetcher {
         return `https://${trimmedUrl}`;
       };
 
+      const metrics = await this.fetchPRStatistics(username);
+
       const normalizedProfile: NormalizedProfile = {
         username: user.login,
         name: user.name,
@@ -220,6 +306,7 @@ export class GitHubProfileFetcher {
         public_repos: user.repositories.totalCount,
         created_at: user.createdAt || new Date().toISOString(),
         cached: false,
+        metrics,
       };
 
       return normalizedProfile;

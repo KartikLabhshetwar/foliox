@@ -124,7 +124,7 @@ export interface GitHubGraphQLUser {
       homepageUrl: string | null;
       stargazerCount: number;
       forkCount: number;
-      isPinned: boolean;
+      isPinned?: boolean;
       primaryLanguage: {
         name: string;
         color: string;
@@ -189,6 +189,14 @@ export interface GitHubGraphQLUser {
   updatedAt: string;
 }
 
+export interface GitHubMetrics {
+  prs_merged: number;
+  prs_open: number;
+  total_contributions: number;
+  issues_opened: number;
+  issues_closed: number;
+}
+
 export interface NormalizedProfile {
   username: string;
   name: string | null;
@@ -208,6 +216,7 @@ export interface NormalizedProfile {
   cached?: boolean;
   about?: AboutData | null;
   seo?: SEOData | null;
+  metrics?: GitHubMetrics | null;
 }
 
 export interface AboutData {

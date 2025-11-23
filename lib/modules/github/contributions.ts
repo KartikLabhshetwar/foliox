@@ -1,5 +1,38 @@
+import { graphql } from '@octokit/graphql';
 import { Settings } from '@/lib/config/settings';
 import { ContributionData, ContributionDay } from '@/types/portfolio';
+
+const graphqlWithAuth = Settings.GITHUB_TOKEN
+  ? graphql.defaults({
+      headers: {
+        authorization: `Bearer ${Settings.GITHUB_TOKEN}`,
+      },
+    })
+  : graphql;
+
+const CONTRIBUTIONS_QUERY = `
+  query($username: String!, $from: DateTime!, $to: DateTime!) {
+    user(login: $username) {
+      contributionsCollection(from: $from, to: $to) {
+        totalCommitContributions
+        totalIssueContributions
+        totalPullRequestContributions
+        totalPullRequestReviewContributions
+        totalRepositoryContributions
+        contributionCalendar {
+          totalContributions
+          weeks {
+            contributionDays {
+              date
+              contributionCount
+              color
+            }
+          }
+        }
+      }
+    }
+  }
+`;
 
 export class GitHubContributionsFetcher {
   static async fetchContributions(username: string): Promise<ContributionData> {
@@ -8,55 +41,50 @@ export class GitHubContributionsFetcher {
     }
 
     try {
-      const endDate = new Date();
-      const startDate = new Date();
-      startDate.setFullYear(startDate.getFullYear() - 1);
+      const to = new Date();
+      const from = new Date();
+      from.setFullYear(from.getFullYear() - 1);
 
-      const contributions = new Map<string, number>();
-
-      const events = await this.fetchUserEvents(username);
-      
-      events.forEach((event) => {
-        const date = new Date(event.created_at);
-        if (date >= startDate && date <= endDate) {
-          const dateKey = date.toISOString().split('T')[0];
-          const currentCount = contributions.get(dateKey) || 0;
-          
-          if (this.isContributionEvent(event.type)) {
-            contributions.set(dateKey, currentCount + 1);
-          }
-        }
+      const result = await graphqlWithAuth<{
+        user: {
+          contributionsCollection: {
+            totalCommitContributions: number;
+            totalIssueContributions: number;
+            totalPullRequestContributions: number;
+            totalPullRequestReviewContributions: number;
+            totalRepositoryContributions: number;
+            contributionCalendar: {
+              totalContributions: number;
+              weeks: Array<{
+                contributionDays: Array<{
+                  date: string;
+                  contributionCount: number;
+                  color: string;
+                }>;
+              }>;
+            };
+          };
+        } | null;
+      }>(CONTRIBUTIONS_QUERY, {
+        username,
+        from: from.toISOString(),
+        to: to.toISOString(),
       });
 
-      const weeks: { days: ContributionDay[] }[] = [];
-      const currentDate = new Date(startDate);
-      currentDate.setDate(currentDate.getDate() - currentDate.getDay());
-
-      const lastWeekDate = new Date(endDate);
-      lastWeekDate.setDate(lastWeekDate.getDate() + (6 - lastWeekDate.getDay()));
-
-      while (currentDate <= lastWeekDate) {
-        const week: ContributionDay[] = [];
-        for (let i = 0; i < 7; i++) {
-          const dateStr = currentDate.toISOString().split('T')[0];
-          const count = contributions.get(dateStr) || 0;
-          const level = this.getContributionLevel(count);
-          
-          week.push({
-            date: dateStr,
-            count,
-            level,
-          });
-          
-          currentDate.setDate(currentDate.getDate() + 1);
-        }
-        weeks.push({ days: week });
+      if (!result.user) {
+        throw new Error(`User ${username} not found`);
       }
 
-      let totalContributions = 0;
-      contributions.forEach((count) => {
-        totalContributions += count;
-      });
+      const calendar = result.user.contributionsCollection.contributionCalendar;
+      const totalContributions = calendar.totalContributions;
+
+      const weeks: { days: ContributionDay[] }[] = calendar.weeks.map((week) => ({
+        days: week.contributionDays.map((day) => ({
+          date: day.date,
+          count: day.contributionCount,
+          level: this.getContributionLevel(day.contributionCount),
+        })),
+      }));
 
       return {
         totalContributions,
@@ -64,77 +92,21 @@ export class GitHubContributionsFetcher {
       };
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorStatus = (error as { status?: number })?.status;
+
+      if (errorMessage.includes('Could not resolve to a User') || errorMessage.includes('NOT_FOUND')) {
+        throw new Error(`GitHub user ${username} not found`);
+      }
+      if (errorMessage.includes('Bad credentials') || errorStatus === 401) {
+        throw new Error('Invalid GitHub token. Please check your GITHUB_TOKEN environment variable.');
+      }
+      if (errorStatus === 403) {
+        throw new Error('GitHub API rate limit exceeded or token lacks required permissions.');
+      }
       throw new Error(`Failed to fetch contributions: ${errorMessage}`);
     }
   }
 
-  private static async fetchUserEvents(username: string): Promise<Array<{ created_at: string; type: string }>> {
-    const events: Array<{ created_at: string; type: string }> = [];
-    let page = 1;
-    const perPage = 100;
-    const maxPages = 10;
-
-    while (page <= maxPages) {
-      try {
-        const response = await fetch(
-          `https://api.github.com/users/${username}/events/public?page=${page}&per_page=${perPage}`,
-          {
-            headers: {
-              Authorization: `Bearer ${Settings.GITHUB_TOKEN}`,
-              Accept: 'application/vnd.github.v3+json',
-            },
-            next: { revalidate: 3600 },
-          }
-        );
-
-        if (!response.ok) {
-          if (response.status === 404) {
-            break;
-          }
-          throw new Error(`GitHub API error: ${response.status}`);
-        }
-
-        const pageEvents = await response.json();
-        
-        if (pageEvents.length === 0) {
-          break;
-        }
-
-        events.push(...pageEvents);
-        
-        if (pageEvents.length < perPage) {
-          break;
-        }
-
-        page++;
-      } catch (error) {
-        if (page === 1) {
-          throw error;
-        }
-        break;
-      }
-    }
-
-    return events;
-  }
-
-  private static isContributionEvent(eventType: string): boolean {
-    const contributionTypes = [
-      'PushEvent',
-      'PullRequestEvent',
-      'IssuesEvent',
-      'CreateEvent',
-      'DeleteEvent',
-      'ForkEvent',
-      'WatchEvent',
-      'PublicEvent',
-      'PullRequestReviewEvent',
-      'CommitCommentEvent',
-      'IssueCommentEvent',
-      'PullRequestReviewCommentEvent',
-    ];
-    return contributionTypes.includes(eventType);
-  }
 
   private static getContributionLevel(count: number): 0 | 1 | 2 | 3 | 4 {
     if (count === 0) return 0;

@@ -4,6 +4,7 @@ import { HeroSection } from "@/components/portfolio/hero-section"
 import { AboutSection } from "@/components/portfolio/about-section"
 import { ProjectsSection } from "@/components/portfolio/projects-section"
 import { ContributionGraph } from "@/components/portfolio/contribution-graph"
+import { MetricsSection } from "@/components/portfolio/metrics-section"
 import { PortfolioNavbar } from "@/components/portfolio/navbar"
 import { PortfolioFooter } from "@/components/portfolio/footer"
 import type { PortfolioData } from "@/types/portfolio"
@@ -65,6 +66,11 @@ export default async function PortfolioPage({ params }: PageProps) {
         <HeroSection profile={data.profile} about={data.about} />
         
         <div className="space-y-8 mt-8">
+          <MetricsSection 
+            metrics={data.profile.metrics} 
+            publicRepos={data.profile.public_repos}
+            followers={data.profile.followers}
+          />
           <AboutSection about={data.about} />
           <ProjectsSection projects={data.projects} />
           <ContributionGraph username={username} />
