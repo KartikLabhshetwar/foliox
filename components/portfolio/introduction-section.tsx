@@ -60,14 +60,10 @@ export function IntroductionSection({ profile }: IntroductionSectionProps) {
       <SectionBorder className="absolute bottom-0 left-0 right-0" />
       <div className="flex items-center justify-between mb-6">
         <Link href="/" className="hover:opacity-80 transition-opacity">
-          <Image
-            src="/logo.png"
-            alt="Foliox"
-            width={64}
-            height={64}
-            className="h-14 w-14 object-contain"
-            priority
-          />
+        <span className="text-xl text-foreground font-bold">
+              <span className="font-[var(--font-playfair)] italic font-normal">folio</span>
+              <span className="font-sans">x</span>
+        </span>
         </Link>
         <ShareButton username={profile.username} />
       </div>

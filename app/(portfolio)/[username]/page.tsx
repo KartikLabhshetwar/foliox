@@ -126,6 +126,8 @@ export default async function PortfolioPage({ params }: PageProps) {
       <main className="container mx-auto px-4 sm:px-6 max-w-6xl relative z-10">
         <IntroductionSection profile={data.profile} />
         
+        <WorkExperienceSection profile={data.profile} />
+        
         <CapabilitiesSection about={data.about} />
         
         <WorkGallery projects={data.projects} />
@@ -133,8 +135,6 @@ export default async function PortfolioPage({ params }: PageProps) {
         <ProofOfWorkSection username={username} />
 
         <PRsByOrgSection prsByOrg={prsByOrg} username={username} />
-
-        <WorkExperienceSection profile={data.profile} />
       </main>
 
       <GetInTouchSection profile={data.profile} />
