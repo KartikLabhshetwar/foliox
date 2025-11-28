@@ -62,7 +62,18 @@ export default function RootLayout({
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
-          themes={["light", "dark", "vintage"]}
+          themes={[
+            "light",
+            "dark",
+            "vintage-light",
+            "vintage-dark",
+            "mono-light",
+            "mono-dark",
+            "neobrutalism-light",
+            "neobrutalism-dark",
+            "t3chat-light",
+            "t3chat-dark",
+          ]}
         >
           {children}
         </ThemeProvider>

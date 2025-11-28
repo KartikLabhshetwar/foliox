@@ -180,7 +180,7 @@ export function ShareButton({ username }: ShareButtonProps) {
                 <label className="text-sm font-medium text-foreground">Create Custom URL (Optional)</label>
                 <div className="flex gap-2">
                   <div className="flex-1 flex items-center border border-input rounded-md bg-background overflow-hidden focus-within:ring-1 focus-within:ring-ring">
-                    <span className="px-3 text-sm text-muted-foreground whitespace-nowrap border-r border-input bg-muted/50 py-2">
+                    <span className="px-3 text-sm text-muted-foreground whitespace-nowrap border-r border-input bg-muted/50 py-2 max-w-[120px] sm:max-w-[200px] overflow-hidden text-ellipsis">
                       {typeof window !== 'undefined' ? new URL(window.location.href).origin : ''}/
                     </span>
                     <Input
