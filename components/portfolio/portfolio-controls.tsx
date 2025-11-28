@@ -1,6 +1,6 @@
 "use client"
 
-import { Moon, Sun, Palette } from "lucide-react"
+import { Moon, Sun, Palette, LayoutGrid, LayoutList } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -8,8 +8,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useEffect, useState } from "react"
+import { useMemo, useState } from "react"
 import { useTheme } from "next-themes"
+import { useRouter, useSearchParams, usePathname } from "next/navigation"
 
 type ThemeFamily = "default" | "vintage" | "mono" | "neobrutalism" | "t3chat"
 
@@ -21,29 +22,35 @@ const THEME_FAMILIES: { value: ThemeFamily; label: string }[] = [
   { value: "t3chat", label: "T3 Chat" },
 ]
 
+type LayoutType = "classic" | "bento"
+
 export function PortfolioControls() {
   const { theme, setTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
-  const [selectedTheme, setSelectedTheme] = useState<ThemeFamily>("default")
-
-  
-  useEffect(() => {
-    setMounted(true)
-    
-
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const [userSelectedTheme, setUserSelectedTheme] = useState<ThemeFamily | null>(() => {
+    if (typeof window === "undefined") return null
     const savedFamily = localStorage.getItem("theme-family") as ThemeFamily
-    if (savedFamily && THEME_FAMILIES.some(t => t.value === savedFamily)) {
-      setSelectedTheme(savedFamily)
-    } else if (theme) {
-      const themeName = theme.replace("-light", "").replace("-dark", "")
-      if (themeName === "light" || themeName === "dark") {
-        setSelectedTheme("default")
-      } else if (THEME_FAMILIES.some(t => t.value === themeName)) {
-        setSelectedTheme(themeName as ThemeFamily)
-      }
-    }
-  }, [theme])
+    return savedFamily && THEME_FAMILIES.some(t => t.value === savedFamily) 
+      ? savedFamily 
+      : null
+  })
+  const currentLayout = (searchParams.get("layout") || "classic") as LayoutType
 
+  const selectedTheme = useMemo<ThemeFamily>(() => {
+    if (userSelectedTheme) return userSelectedTheme
+    
+    if (!theme) return "default"
+    const themeName = theme.replace("-light", "").replace("-dark", "")
+    if (themeName === "light" || themeName === "dark") {
+      return "default"
+    }
+    if (THEME_FAMILIES.some(t => t.value === themeName)) {
+      return themeName as ThemeFamily
+    }
+    return "default"
+  }, [userSelectedTheme, theme])
 
   const isDark = theme === "dark" || theme?.endsWith("-dark")
 
@@ -56,7 +63,7 @@ export function PortfolioControls() {
   }
 
   const selectThemeFamily = (family: ThemeFamily) => {
-    setSelectedTheme(family)
+    setUserSelectedTheme(family)
     localStorage.setItem("theme-family", family)
     
     if (family === "default") {
@@ -68,10 +75,22 @@ export function PortfolioControls() {
 
   const currentThemeLabel = THEME_FAMILIES.find(t => t.value === selectedTheme)?.label || "Default"
 
+  const toggleLayout = () => {
+    const newLayout = currentLayout === "classic" ? "bento" : "classic"
+    const params = new URLSearchParams(searchParams.toString())
+    
+    if (newLayout === "classic") {
+      params.delete("layout")
+    } else {
+      params.set("layout", newLayout)
+    }
+    
+    router.push(`${pathname}?${params.toString()}`, { scroll: false })
+  }
+
   return (
     <div className="flex items-center gap-2">
-      {/* dropdown */}
-      <div className="flex items-center hidden sm:block gap-1 bg-background/50 backdrop-blur-sm p-1 rounded-full border border-border">
+      <div className="hidden sm:flex items-center gap-1 bg-background/50 backdrop-blur-sm p-1 rounded-full border border-border">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -97,6 +116,22 @@ export function PortfolioControls() {
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
+      </div>
+
+      <div className="flex items-center gap-1 bg-background/50 backdrop-blur-sm p-1 rounded-full border border-border">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={toggleLayout}
+          title={currentLayout === "classic" ? "Switch to Bento Layout" : "Switch to Classic Layout"}
+          className="rounded-full h-7 w-7"
+        >
+          {currentLayout === "classic" ? (
+            <LayoutGrid className="h-3.5 w-3.5" />
+          ) : (
+            <LayoutList className="h-3.5 w-3.5" />
+          )}
+        </Button>
       </div>
 
       <div className="flex items-center gap-1 bg-background/50 backdrop-blur-sm p-1 rounded-full border border-border">

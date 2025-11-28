@@ -18,10 +18,6 @@ export function WorkGallery({ projects }: WorkGalleryProps) {
 
   if (!projects || projects.featured.length === 0) return null
 
-  const totalBytes = projects.languages 
-    ? Object.values(projects.languages).reduce((sum, bytes) => sum + bytes, 0)
-    : 0
-
   return (
     <section className="relative w-full py-6 sm:py-8 md:py-12">
       <SectionBorder className="absolute bottom-0 left-0 right-0" />
@@ -164,37 +160,6 @@ export function WorkGallery({ projects }: WorkGalleryProps) {
               </span>
             </button>
           </div>
-        )}
-
-        {projects.languages && Object.keys(projects.languages).length > 0 && (
-          <Card className="border-border bg-card/50 backdrop-blur-sm">
-            <CardContent className="p-6 sm:p-8">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg sm:text-xl font-bold tracking-tight text-foreground">Top Languages</h3>
-                <span className="text-xs sm:text-sm text-muted-foreground">
-                  {Object.keys(projects.languages).length} languages
-                </span>
-              </div>
-              <div className="flex flex-wrap gap-2.5 sm:gap-3">
-                {Object.entries(projects.languages)
-                  .sort(([, a], [, b]) => b - a)
-                  .slice(0, 12)
-                  .map(([lang, bytes]) => {
-                    const percentage = totalBytes > 0 ? ((bytes / totalBytes) * 100).toFixed(1) : 0
-                    return (
-                      <Badge 
-                        key={lang} 
-                        variant="secondary" 
-                        className="text-sm font-medium px-3 py-1.5 bg-secondary/80 hover:bg-secondary hover:scale-105 transition-all duration-200 cursor-default"
-                        title={`${percentage}% of code`}
-                      >
-                        {lang}
-                      </Badge>
-                    )
-                  })}
-              </div>
-            </CardContent>
-          </Card>
         )}
       </div>
     </section>

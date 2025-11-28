@@ -5,12 +5,12 @@ import { ProofOfWorkSection } from "@/components/portfolio/proof-of-work-section
 import { WorkExperienceSection } from "@/components/portfolio/work-experience-section"
 import { PRsByOrgSection } from "@/components/portfolio/prs-by-org-section"
 import { GetInTouchSection } from "@/components/portfolio/get-in-touch-section"
+import { TopLanguagesSection } from "@/components/portfolio/top-languages-section"
 import { Card } from "@/components/ui/card"
 import type { NormalizedProfile } from "@/types/github"
 import type { AboutData } from "@/types/portfolio"
 import type { ProjectsData } from "@/types/github"
 import type { PRByOrg } from "@/components/portfolio/prs-by-org-section"
-import { cn } from "@/lib/utils"
 
 interface BentoLayoutProps {
   profile: NormalizedProfile
@@ -36,8 +36,13 @@ export function BentoLayout({
           <IntroductionSection profile={profile} />
         </Card>
 
-        {/* Work Experience - Tall Card */}
-        <Card className="col-span-1 md:col-span-1 lg:col-span-2 row-span-2 p-6 overflow-y-auto max-h-[600px] bg-card/50 backdrop-blur-sm border-border/50 hover:border-primary/50 transition-colors shadow-lg hover:shadow-xl dark:shadow-none dark:hover:shadow-primary/10">
+        {/* Top Languages */}
+        <div className="col-span-1 md:col-span-1 lg:col-span-2 row-span-2">
+          <TopLanguagesSection languages={projects?.languages} />
+        </div>
+
+        {/* Work Experience - Wide Card */}
+        <Card className="col-span-1 md:col-span-3 lg:col-span-4 p-6 overflow-y-auto max-h-[600px] bg-card/50 backdrop-blur-sm border-border/50 hover:border-primary/50 transition-colors shadow-lg hover:shadow-xl dark:shadow-none dark:hover:shadow-primary/10">
           <WorkExperienceSection profile={profile} />
         </Card>
 
@@ -56,7 +61,7 @@ export function BentoLayout({
           <ProofOfWorkSection username={username} />
         </Card>
 
-        {/* PRs - Wide Card */}
+        {/* PRs */}
         <Card className="col-span-1 md:col-span-1 lg:col-span-2 p-6 bg-card/50 backdrop-blur-sm border-border/50 hover:border-primary/50 transition-colors shadow-lg hover:shadow-xl dark:shadow-none dark:hover:shadow-primary/10">
            <PRsByOrgSection prsByOrg={prsByOrg} username={username} />
         </Card>

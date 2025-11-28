@@ -5,7 +5,9 @@ import { ProofOfWorkSection } from "@/components/portfolio/proof-of-work-section
 import { WorkExperienceSection } from "@/components/portfolio/work-experience-section"
 import { PRsByOrgSection } from "@/components/portfolio/prs-by-org-section"
 import { GetInTouchSection } from "@/components/portfolio/get-in-touch-section"
+import { TopLanguagesSection } from "@/components/portfolio/top-languages-section"
 import DiagonalPattern from "@/components/portfolio/diagonal-pattern"
+import SectionBorder from "@/components/portfolio/section-border"
 import type { NormalizedProfile } from "@/types/github"
 import type { AboutData } from "@/types/portfolio"
 import type { ProjectsData } from "@/types/github"
@@ -39,6 +41,11 @@ export function ClassicLayout({
         <CapabilitiesSection about={about} />
         
         <WorkGallery projects={projects} />
+
+        <section className="relative w-full py-6 sm:py-8 md:py-12">
+          <SectionBorder className="absolute bottom-0 left-0 right-0" />
+          <TopLanguagesSection languages={projects?.languages} variant="classic" />
+        </section>
 
         <ProofOfWorkSection username={username} />
 

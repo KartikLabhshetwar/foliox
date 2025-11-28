@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
+import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -18,6 +19,7 @@ interface ShareButtonProps {
 }
 
 export function ShareButton({ username }: ShareButtonProps) {
+  const searchParams = useSearchParams()
   const [copied, setCopied] = useState(false)
   const [open, setOpen] = useState(false)
   const [canShare, setCanShare] = useState(false)
@@ -32,14 +34,21 @@ export function ShareButton({ username }: ShareButtonProps) {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const baseUrl = window.location.origin
-      if (registeredSlug) {
-        setPortfolioUrl(`${baseUrl}/${registeredSlug}`)
-      } else {
-        setPortfolioUrl(`${baseUrl}/${username}`)
+      const layout = searchParams.get("layout")
+      const params = new URLSearchParams()
+      
+      if (layout) {
+        params.set("layout", layout)
       }
+      
+      const queryString = params.toString()
+      const urlPath = registeredSlug ? `/${registeredSlug}` : `/${username}`
+      const fullUrl = queryString ? `${baseUrl}${urlPath}?${queryString}` : `${baseUrl}${urlPath}`
+      
+      setPortfolioUrl(fullUrl)
       setCanShare(typeof navigator !== 'undefined' && 'share' in navigator)
     }
-  }, [username, registeredSlug])
+  }, [username, registeredSlug, searchParams])
 
   const checkAvailability = useCallback(async (slug: string) => {
     if (!slug || slug.length < 3) {
