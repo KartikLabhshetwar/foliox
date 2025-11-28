@@ -5,12 +5,10 @@ import { useSession, signOut } from "@/lib/auth-client";
 import { Popover, PopoverContent } from "@/components/ui/popover";
 import Image from "next/image";
 import { FaChevronDown, FaSignOutAlt } from "react-icons/fa";
-import { useRouter } from "next/navigation";
 
 export function UserMenu() {
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
-  const router = useRouter();
 
   if (!session?.user) {
     return null;
@@ -19,20 +17,6 @@ export function UserMenu() {
   const handleLogout = async () => {
     await signOut();
     setIsOpen(false);
-  };
-
-  const handleViewProfile = async () => {
-    try {
-      const response = await fetch("/api/auth/get-github-username");
-      if (response.ok) {
-        const data = await response.json();
-        if (data.username) {
-          router.push(`/${data.username}`);
-          setIsOpen(false);
-        }
-      }
-    } catch {
-    }
   };
 
   return (
@@ -83,12 +67,6 @@ export function UserMenu() {
           </div>
         </div>
         <div className="p-2">
-          <button
-            onClick={handleViewProfile}
-            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-muted rounded-md transition-colors text-left"
-          >
-            <span>View Profile</span>
-          </button>
           <button
             onClick={handleLogout}
             className="w-full flex items-center gap-2 px-3 py-2 text-sm text-destructive hover:bg-destructive/10 rounded-md transition-colors text-left"
