@@ -31,21 +31,39 @@ export function ShareButton({ username }: ShareButtonProps) {
   const [availabilityStatus, setAvailabilityStatus] = useState<"idle" | "available" | "taken" | "checking">("idle")
   const [registeredSlug, setRegisteredSlug] = useState<string | null>(null)
 
+  function getRootHost() {
+    if (typeof window === "undefined") return "";
+
+    const hostParts = window.location.hostname.split(".");
+
+    if (hostParts[hostParts.length - 1] === "localhost") {
+      return "localhost" + (window.location.port ? `:${window.location.port}` : "");
+    }
+
+    return hostParts.slice(-2).join(".") + (window.location.port ? `:${window.location.port}` : "");
+  }
+
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const baseUrl = window.location.origin
       const layout = searchParams.get("layout")
       const params = new URLSearchParams()
-      
+
       if (layout) {
         params.set("layout", layout)
       }
-      
+
       const queryString = params.toString()
-      const urlPath = registeredSlug ? `/${registeredSlug}` : `/${username}`
-      const fullUrl = queryString ? `${baseUrl}${urlPath}?${queryString}` : `${baseUrl}${urlPath}`
-      
+      const subdomain = registeredSlug ?? username
+      const protocol = window.location.protocol
+
+      const rootDomain = process.env.NEXT_PUBLIC_SITE_URL?.replace(/^https?:\/\//, "") || "localhost:3000";
+      const fullUrl = `${protocol}//${subdomain}.${rootDomain}${queryString ? `/?${queryString}` : "/"}`;
+
+
       setPortfolioUrl(fullUrl)
+
       setCanShare(typeof navigator !== 'undefined' && 'share' in navigator)
     }
   }, [username, registeredSlug, searchParams])
@@ -190,7 +208,7 @@ export function ShareButton({ username }: ShareButtonProps) {
                 <div className="flex gap-2">
                   <div className="flex-1 flex items-center border border-input rounded-md bg-background overflow-hidden focus-within:ring-1 focus-within:ring-ring">
                     <span className="px-3 text-sm text-muted-foreground whitespace-nowrap border-r border-input bg-muted/50 py-2 max-w-[120px] sm:max-w-[200px] overflow-hidden text-ellipsis">
-                      {typeof window !== 'undefined' ? new URL(window.location.href).origin : ''}/
+                      {typeof window !== 'undefined' ? new URL(window.location.href).protocol : ''}//
                     </span>
                     <Input
                       value={customSlug}
@@ -198,10 +216,15 @@ export function ShareButton({ username }: ShareButtonProps) {
                         const value = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '')
                         setCustomSlug(value)
                       }}
-                      placeholder="your-custom-url"
+                      placeholder="your-custom-subdomain"
                       className="border-0 rounded-none focus-visible:ring-0 font-mono text-sm flex-1"
                       disabled={isRegistering}
                     />
+                    <span className="px-3 text-sm text-muted-foreground whitespace-nowrap border-r border-input bg-muted/50 py-2 max-w-[120px] sm:max-w-[200px] overflow-hidden text-ellipsis">
+                      {
+                        getRootHost()
+                      }/
+                    </span>
                   </div>
                   <Button
                     onClick={handleRegister}
@@ -245,7 +268,7 @@ export function ShareButton({ username }: ShareButtonProps) {
                 <FaCheck className="h-4 w-4 mt-0.5 shrink-0" />
                 <span>
                   Custom URL created successfully! Your portfolio is now available at{" "}
-                  <span className="font-mono font-semibold">/{registeredSlug}</span>
+                  <span className="font-mono font-semibold">{registeredSlug}</span>
                 </span>
               </p>
             </div>
