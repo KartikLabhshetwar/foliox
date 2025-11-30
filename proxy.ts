@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { Settings } from '@/lib/config/settings';
+import { extractSubdomainFromRequest } from './lib/utils/domain';
 
 const ALLOWED_ORIGINS = [
   'http://localhost:3000',
@@ -55,10 +56,19 @@ export function proxy(request: NextRequest) {
     return response;
   }
 
+  // Subdomain routing logic ->
+  const subdomain = extractSubdomainFromRequest(request)
+  if (subdomain && pathname === '/') {
+    const url = request.nextUrl.clone();
+    url.pathname = `/${subdomain}`;
+    return NextResponse.rewrite(url);
+  }
+
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/api/:path*'],
+    matcher: ['/((?!api|_next|[\\w-]+\\.\\w+).*)'],
 };
 

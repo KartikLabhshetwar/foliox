@@ -8,6 +8,8 @@ import type { PRByOrg } from "@/components/portfolio/prs-by-org-section"
 import { createAPIClient } from "@/lib/utils/api-client"
 import { verifyUsername } from "@/lib/utils/user"
 import { getGithubUsernameByCustomSlug } from "@/lib/utils/custom-url"
+import {  extractSubdomainFromHostname } from "@/lib/utils/domain"
+import { headers } from "next/headers"
 
 interface PageProps {
   params: Promise<{ username: string }>
@@ -95,8 +97,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function PortfolioPage({ params, searchParams }: PageProps) {
   const { username: rawUsername } = await params
+  const hostname = (await headers()).get("host") || ""
+  const subdomain = extractSubdomainFromHostname(hostname)
+  if(!subdomain){
+    return
+  }
   const { layout } = await searchParams
-  const username = await resolveUsername(rawUsername)
+  
+  const username = await resolveUsername(rawUsername || subdomain)
   
   if (!username) {
     notFound()
