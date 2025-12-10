@@ -176,7 +176,9 @@ export default function LandingPage() {
     })
 
     setIsLoading(true)
-    router.push(`/${username.trim()}`)
+    const targetUrl = `${window.location.protocol}//${username}.${window.location.host}/`
+
+    window.location.href = targetUrl
   }
 
   return (
@@ -200,18 +202,18 @@ export default function LandingPage() {
               rel="noreferrer"
               className="hidden md:flex items-center justify-center gap-1.5 outline-none transition-colors border border-transparent text-white px-2.5 py-1.5 rounded-full bg-gray-900 hover:bg-gray-700 active:bg-gray-600 text-xs md:text-sm lg:px-4 lg:py-2.5 lg:text-base tracking-normal whitespace-nowrap cursor-pointer relative group overflow-visible"
             >
-            <FaGithub className="h-4 w-4 relative z-10 transition-transform group-hover:scale-110" />
-            <span className="relative z-10">GitHub</span>
-            {displayedStars > 0 && (
-              <span className="relative z-10 flex items-center gap-1 text-yellow-400 font-medium">
-                <FaStar className="h-3 w-3" />
-                <span className="tabular-nums">{displayedStars.toLocaleString()}</span>
-              </span>
-            )}
-            <FaStar className="absolute h-3 w-3 text-yellow-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -top-1 -right-1 animate-sparkle" />
-            <FaStar className="absolute h-2 w-2 text-yellow-300 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -bottom-0.5 -left-0.5 animate-sparkle-float" style={{ animationDelay: '0.2s' }} />
-            <FaStar className="absolute h-2.5 w-2.5 text-yellow-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500 top-1/2 -left-2 animate-sparkle" style={{ animationDelay: '0.4s' }} />
-            <FaStar className="absolute h-2 w-2 text-yellow-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500 top-1/2 -right-2 animate-sparkle-float" style={{ animationDelay: '0.6s' }} />
+              <FaGithub className="h-4 w-4 relative z-10 transition-transform group-hover:scale-110" />
+              <span className="relative z-10">GitHub</span>
+              {displayedStars > 0 && (
+                <span className="relative z-10 flex items-center gap-1 text-yellow-400 font-medium">
+                  <FaStar className="h-3 w-3" />
+                  <span className="tabular-nums">{displayedStars.toLocaleString()}</span>
+                </span>
+              )}
+              <FaStar className="absolute h-3 w-3 text-yellow-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -top-1 -right-1 animate-sparkle" />
+              <FaStar className="absolute h-2 w-2 text-yellow-300 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -bottom-0.5 -left-0.5 animate-sparkle-float" style={{ animationDelay: '0.2s' }} />
+              <FaStar className="absolute h-2.5 w-2.5 text-yellow-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500 top-1/2 -left-2 animate-sparkle" style={{ animationDelay: '0.4s' }} />
+              <FaStar className="absolute h-2 w-2 text-yellow-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500 top-1/2 -right-2 animate-sparkle-float" style={{ animationDelay: '0.6s' }} />
             </Link>
             <Link
               href="https://github.com/kartiklabhshetwar/foliox"
@@ -219,17 +221,17 @@ export default function LandingPage() {
               rel="noreferrer"
               className="md:hidden flex items-center justify-center gap-1 outline-none transition-colors border border-transparent text-white px-2.5 py-1.5 rounded-full bg-gray-900 hover:bg-gray-700 active:bg-gray-600 text-xs tracking-normal whitespace-nowrap cursor-pointer relative group overflow-visible"
             >
-            <FaGithub className="h-4 w-4 relative z-10 transition-transform group-hover:scale-110" />
-            {displayedStars > 0 && (
-              <span className="relative z-10 flex items-center gap-0.5 text-yellow-400 text-[10px] font-medium">
-                <FaStar className="h-2.5 w-2.5" />
-                <span className="tabular-nums">{displayedStars > 999 ? `${(displayedStars / 1000).toFixed(1)}k` : displayedStars}</span>
-              </span>
-            )}
-            <FaStar className="absolute h-2.5 w-2.5 text-yellow-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -top-1 -right-1 animate-sparkle" />
-            <FaStar className="absolute h-2 w-2 text-yellow-300 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -bottom-0.5 -left-0.5 animate-sparkle-float" style={{ animationDelay: '0.2s' }} />
-            <FaStar className="absolute h-2 w-2 text-yellow-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500 top-1/2 -left-2 animate-sparkle" style={{ animationDelay: '0.4s' }} />
-            <FaStar className="absolute h-2 w-2 text-yellow-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500 top-1/2 -right-2 animate-sparkle-float" style={{ animationDelay: '0.6s' }} />
+              <FaGithub className="h-4 w-4 relative z-10 transition-transform group-hover:scale-110" />
+              {displayedStars > 0 && (
+                <span className="relative z-10 flex items-center gap-0.5 text-yellow-400 text-[10px] font-medium">
+                  <FaStar className="h-2.5 w-2.5" />
+                  <span className="tabular-nums">{displayedStars > 999 ? `${(displayedStars / 1000).toFixed(1)}k` : displayedStars}</span>
+                </span>
+              )}
+              <FaStar className="absolute h-2.5 w-2.5 text-yellow-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -top-1 -right-1 animate-sparkle" />
+              <FaStar className="absolute h-2 w-2 text-yellow-300 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -bottom-0.5 -left-0.5 animate-sparkle-float" style={{ animationDelay: '0.2s' }} />
+              <FaStar className="absolute h-2 w-2 text-yellow-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500 top-1/2 -left-2 animate-sparkle" style={{ animationDelay: '0.4s' }} />
+              <FaStar className="absolute h-2 w-2 text-yellow-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500 top-1/2 -right-2 animate-sparkle-float" style={{ animationDelay: '0.6s' }} />
             </Link>
           </div>
         </div>
@@ -253,19 +255,19 @@ export default function LandingPage() {
               <div className="flex w-full flex-col items-center justify-center">
                 <div className="z-10 flex w-full max-w-[826px] flex-col items-center justify-center gap-8 md:gap-[50px]">
                   {/* Logo and Description */}
-                    <div className="flex w-full flex-col items-center justify-center text-center">
+                  <div className="flex w-full flex-col items-center justify-center text-center">
+                    <div className="flex flex-col items-center gap-3 md:gap-8">
                       <div className="flex flex-col items-center gap-3 md:gap-8">
-                        <div className="flex flex-col items-center gap-3 md:gap-8">
-                          <h1 className="text-5xl md:text-7xl font-bold text-white">
-                            <span className="font-[var(--font-playfair)] italic font-normal">folio</span>
-                            <span className="font-sans">x</span>
-                          </h1>
-                        </div>
-                        <p className="text-base md:text-2xl px-5 md:px-10 font-normal text-white tracking-normal opacity-80 max-w-2xl">
-                          Turn your GitHub into a stunning portfolio. Powered by AI, zero coding required.
-                        </p>
+                        <h1 className="text-5xl md:text-7xl font-bold text-white">
+                          <span className="font-[var(--font-playfair)] italic font-normal">folio</span>
+                          <span className="font-sans">x</span>
+                        </h1>
                       </div>
+                      <p className="text-base md:text-2xl px-5 md:px-10 font-normal text-white tracking-normal opacity-80 max-w-2xl">
+                        Turn your GitHub into a stunning portfolio. Powered by AI, zero coding required.
+                      </p>
                     </div>
+                  </div>
 
                   {/* Form */}
                   <div className="max-w-md mx-auto relative group w-full">
